@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.knaw.dans.easy</groupId>
     <artifactId>easy-manage-deposit</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.1-beta-1</version>
     <name>EASY Manage Deposit</name>
     <url>https://github.com/DANS-KNAW/easy-manage-deposit</url>
     <description>Manages the deposits in the deposit area.</description>
@@ -35,7 +35,7 @@
     </properties>
     <scm>
         <developerConnection>scm:git:https://github.com/DANS-KNAW/easy-manage-deposit</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v3.0.1-beta-1</tag>
     </scm>
     <dependencies>
         <dependency>
