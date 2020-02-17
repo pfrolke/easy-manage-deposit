@@ -49,7 +49,7 @@ trait Curation extends DebugEnhancedLogging {
           "identifier.dans-doi.registered" -> "yes",
           "curation.performed" -> "yes",
           "state.label" -> FEDORA_ARCHIVED.toString,
-          "state.description" -> s"${ landingPageBaseUrl.resolve(datasetId) }"
+          "state.description" -> s"${ landingPageBaseUrl.resolve(s"./$datasetId") }"
         )
         manager.saveProperties()
         logAndReturnMessage(s"[$depositId] deposit with datasetId $datasetId has been successfully curated, state shifted from $IN_REVIEW to $FEDORA_ARCHIVED")
@@ -58,7 +58,7 @@ trait Curation extends DebugEnhancedLogging {
           "identifier.dans-doi.registered" -> "no",
           "curation.performed" -> "yes",
           "state.label" -> REJECTED.toString,
-          "state.description" -> "The DANS data-manager requests changes on this deposit"
+          "state.description" -> Curation.requestChangesDescription
         )
         manager.saveProperties()
         logAndReturnMessage(s"[$depositId] deposit with datasetId $datasetId has been successfully curated, state shifted from $IN_REVIEW to $REJECTED")
@@ -81,4 +81,8 @@ trait Curation extends DebugEnhancedLogging {
     logger.info(msg)
     Success(msg)
   }
+}
+
+object Curation {
+  val requestChangesDescription = "The DANS data-manager requests changes on this deposit"
 }

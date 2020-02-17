@@ -33,7 +33,7 @@ class CurationSpec extends TestSupportFixture
 
   override val fedora: Fedora = mock[Fedora]
   override val landingPageBaseUrl: URI = new URI("http://deasy.dans.knaw.nl/ui/datasets/id/")
-  private val datasetId = "fedora12345"
+  private val datasetId = "easy-dataset:12345"
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -66,7 +66,7 @@ class CurationSpec extends TestSupportFixture
   "curate" should "should update the state.label=FEDORA_ARCHIVED, state.description=<landingPage> and curation.performed properties if the current state.label is IN_REVIEW" in {
     val manager = setupTestAndValidateCurationResult(PUBLISHED, Success(s"[aba410b6-1a55-40b2-9ebe-6122aad00285] deposit with datasetId $datasetId has been successfully curated, state shifted from $IN_REVIEW to $FEDORA_ARCHIVED"))
     manager.getStateLabel shouldBe FEDORA_ARCHIVED
-    manager.getStateDescription.value shouldBe landingPageBaseUrl.resolve(datasetId).toString
+    manager.getStateDescription.value shouldBe s"$landingPageBaseUrl$datasetId"
     manager.isCurationPerformed shouldBe true
   }
 
@@ -90,7 +90,7 @@ class CurationSpec extends TestSupportFixture
   it should "should update the state.label=REJECTED, state.description and curation.performed properties if the current state.label is IN_REVIEW and fedora.state=DELETED" in {
     val manager = setupTestAndValidateCurationResult(DELETED, Success(s"[aba410b6-1a55-40b2-9ebe-6122aad00285] deposit with datasetId $datasetId has been successfully curated, state shifted from $IN_REVIEW to $REJECTED"))
     manager.getStateLabel shouldBe REJECTED
-    manager.getStateDescription.value shouldBe "The DANS data-manager requests changes on this deposit"
+    manager.getStateDescription.value shouldBe Curation.requestChangesDescription
     manager.isCurationPerformed shouldBe true
   }
 

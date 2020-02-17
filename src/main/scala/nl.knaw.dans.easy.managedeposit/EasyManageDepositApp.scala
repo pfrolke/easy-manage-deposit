@@ -21,6 +21,7 @@ import java.nio.file.{ Files, Path, Paths }
 import com.yourmediashelf.fedora.client.{ FedoraClient, FedoraCredentials }
 import nl.knaw.dans.easy.managedeposit.Command.FeedBackMessage
 import nl.knaw.dans.lib.error._
+import nl.knaw.dans.lib.string._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.collection.JavaConverters._
@@ -31,6 +32,7 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
 
   private val sword2DepositsDir = Paths.get(configuration.properties.getString("easy-sword2"))
   private val ingestFlowInbox = Paths.get(configuration.properties.getString("easy-ingest-flow-inbox"))
+  private val ingestFlowInboxArchived = configuration.properties.getString("easy-ingest-flow-inbox-archived").toOption.map(Paths.get(_)).filter(Files.exists(_))
   private val fedoraCredentials = new FedoraCredentials(
     new URL(configuration.properties.getString("fedora.url")),
     configuration.properties.getString("fedora.user"),
@@ -78,21 +80,24 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
   def summary(depositor: Option[DepositorId], age: Option[Age]): Try[String] = Try {
     val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, age, "SWORD2")
     val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, age, "INGEST_FLOW")
-    ReportGenerator.outputSummary(sword2Deposits ++ ingestFlowDeposits, depositor)(Console.out)
+    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
+    ReportGenerator.outputSummary(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits, depositor)(Console.out)
     "End of summary report."
   }
 
   def createFullReport(depositor: Option[DepositorId], age: Option[Age]): Try[String] = Try {
     val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, age, "SWORD2")
     val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, age, "INGEST_FLOW")
-    ReportGenerator.outputFullReport(sword2Deposits ++ ingestFlowDeposits)(Console.out)
+    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
+    ReportGenerator.outputFullReport(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits)(Console.out)
     "End of full report."
   }
 
   def createErrorReport(depositor: Option[DepositorId], age: Option[Age]): Try[String] = Try {
     val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, age, "SWORD2")
     val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, age, "INGEST_FLOW")
-    ReportGenerator.outputErrorReport(sword2Deposits ++ ingestFlowDeposits)(Console.out)
+    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
+    ReportGenerator.outputErrorReport(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits)(Console.out)
     "End of error report."
   }
 

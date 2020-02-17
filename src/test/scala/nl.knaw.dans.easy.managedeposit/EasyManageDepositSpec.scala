@@ -63,6 +63,7 @@ class EasyManageDepositSpec extends TestSupportFixture with BeforeAndAfterEach {
     val properties = new PropertiesConfiguration()
     properties.setProperty("easy-sword2", "")
     properties.setProperty("easy-ingest-flow-inbox", "")
+    properties.setProperty("easy-ingest-flow-inbox-archived", "")
     properties.setProperty("fedora.url", "http://something")
     properties.setProperty("fedora.user", "")
     properties.setProperty("fedora.password", "")
