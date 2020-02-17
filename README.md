@@ -43,7 +43,8 @@ ARGUMENTS
             depositor (not required)
           ---
           
-          Subcommand: report error - creates a report displaying all failed, rejected and invalid deposits for depositor(optional)
+          Subcommand: report error - creates a report displaying all failed, rejected and invalid 
+                               deposits for depositor(optional)
             -a, --age  <arg>   Only report on the deposits that are less than n days old.
                                An age argument of n=0 days corresponds to 0<=n<1. If this
                                argument is not provided, all deposits will be reported on.
@@ -72,25 +73,35 @@ ARGUMENTS
                                                  deposits that were deleted
             -s, --state  <arg>                   The deposits with the specified state
                                                  argument are deleted
+            -a, --area  <arg>                    The area from which the deposits are considered                                      
             -h, --help                           Show help message
             
            trailing arguments:
             depositor (not required)
           ---
           
-          Subcommand: sync-fedora-state - Syncs a deposit with Fedora, checks if the deposit is properly registered in Fedora and updates the deposit.properties accordingly
+          Subcommand: sync-fedora-state - Syncs a deposit with Fedora, checks if the deposit is 
+                                          properly registered in Fedora and updates the 
+                                          deposit.properties accordingly
             -h, --help   Show help message
           
            trailing arguments:
             easy-dataset-id (required)   The dataset identifier of the deposit which
                                          deposit.properties are being synced with Fedora
           ---
+          
+          Subcommand: sync-in-review-state - Checks all the deposits in the deposit-draft-area that 
+                                         are IN_REVIEW, and updates them from the deposit.properties  
+                                         in the ingest-flow-area
     
      
 DESCRIPTION
 -----------
 
-Manages the deposits in the deposit area.
+Manages the deposits in the deposit areas:
+ * ingest-flow-inbox
+ * sword2-inbox
+ * deposit-draft-area
      
 EXAMPLES
 --------
@@ -101,9 +112,12 @@ EXAMPLES
      easy-manage-deposit report error -a 0 someUserId
      easy-manage-deposit report full -a 0 someUserId
      easy-manage-deposit report summary --age 2 someUserId
-     easy-manage-deposit clean someUserId
+     easy-manage-deposit clean --area sword2-inbox someUserId
      easy-manage-deposit clean --data-only --state <state> --keep <n> someUserId
      easy-manage-deposit retry someUserId
+     easy-manage-deposit sync-fedora-state easy-dataset:100
+     easy-manage-deposit sync-in-review-state
+     
 
 
 INSTALLATION AND CONFIGURATION
