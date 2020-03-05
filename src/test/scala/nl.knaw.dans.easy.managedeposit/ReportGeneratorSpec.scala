@@ -107,19 +107,19 @@ class ReportGeneratorSpec extends TestSupportFixture
          |-------------
          |Timestamp          : $currentTime
          |Number of deposits :         16
-         |Total space        :      2.0 M
+         |Total space        :      2,0 M
          |
          |Per state:
          |----------
-         |ARCHIVED        :     2 (   252.0 K)
-         |DRAFT           :     1 (   126.0 K)
-         |FEDORA_ARCHIVED :     1 (   126.0 K)
-         |FINALIZING      :     1 (   126.0 K)
-         |IN_REVIEW       :     1 (   126.0 K)
-         |INVALID         :     1 (   126.0 K)
-         |REJECTED        :     1 (   126.0 K)
-         |SUBMITTED       :     4 (   503.9 K)
-         |UNKNOWN         :     4 (   503.9 K)""".stripMargin
+         |ARCHIVED        :     2 (   252,0 K)
+         |DRAFT           :     1 (   126,0 K)
+         |FEDORA_ARCHIVED :     1 (   126,0 K)
+         |FINALIZING      :     1 (   126,0 K)
+         |IN_REVIEW       :     1 (   126,0 K)
+         |INVALID         :     1 (   126,0 K)
+         |REJECTED        :     1 (   126,0 K)
+         |SUBMITTED       :     4 (   503,9 K)
+         |UNKNOWN         :     4 (   503,9 K)""".stripMargin
   }
 
   it should "produce a report when no deposits are found" in {
@@ -139,7 +139,7 @@ class ReportGeneratorSpec extends TestSupportFixture
          |-------------
          |Timestamp          : $currentTime
          |Number of deposits :          0
-         |Total space        :      0.0 B
+         |Total space        :      0,0 B
          |
          |Per state:
          |----------""".stripMargin
@@ -163,18 +163,18 @@ class ReportGeneratorSpec extends TestSupportFixture
          |-------------
          |Timestamp          : $currentTime
          |Number of deposits :         15
-         |Total space        :      1.8 M
+         |Total space        :      1,8 M
          |
          |Per state:
          |----------
-         |ARCHIVED   :     2 (   252.0 K)
-         |DRAFT      :     1 (   126.0 K)
-         |FINALIZING :     1 (   126.0 K)
-         |IN_REVIEW  :     1 (   126.0 K)
-         |INVALID    :     1 (   126.0 K)
-         |REJECTED   :     1 (   126.0 K)
-         |SUBMITTED  :     4 (   503.9 K)
-         |UNKNOWN    :     4 (   503.9 K)""".stripMargin
+         |ARCHIVED   :     2 (   252,0 K)
+         |DRAFT      :     1 (   126,0 K)
+         |FINALIZING :     1 (   126,0 K)
+         |IN_REVIEW  :     1 (   126,0 K)
+         |INVALID    :     1 (   126,0 K)
+         |REJECTED   :     1 (   126,0 K)
+         |SUBMITTED  :     4 (   503,9 K)
+         |UNKNOWN    :     4 (   503,9 K)""".stripMargin
   }
 
   "outputErrorReport" should "only print the deposits containing an error" in {
@@ -243,7 +243,7 @@ class ReportGeneratorSpec extends TestSupportFixture
     outputReportManged(ps, depositsInReport ::: depositsNotInReport, ReportType.ERROR)
 
     val errorReport = baos.toString
-    errorReport.lines.toList should have length depositsInReport.size + 1 // 1x header + |depositsInReport| 
+    errorReport.linesIterator.toList should have length depositsInReport.size + 1 // 1x header + |depositsInReport|
     forEvery(depositsInReport)(deposit => errorReport should include(createCsvRow(deposit)))
     forEvery(depositsNotInReport)(deposit => errorReport should not include createCsvRow(deposit))
   }
