@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.easy.managedeposit
 
+import java.nio.file.Path
+
 import nl.knaw.dans.easy.managedeposit.State.State
 import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand, ValueConverter, singleArgConverter }
 
@@ -31,6 +33,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
        |  $printedName report full [-a, --age <n>] [<depositor>]
        |  $printedName report summary [-a, --age <n>] [<depositor>]
        |  $printedName report error [-a, --age <n>] [<depositor>]
+       |  $printedName report raw [<location>]
        |  $printedName clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
        |  $printedName sync-fedora-state <easy-dataset-id>
      """.stripMargin
@@ -76,6 +79,17 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
       footer(SUBCOMMAND_SEPARATOR)
     }
     addSubcommand(errorCmd)
+    
+    val rawCmd = new Subcommand("raw") {
+      val location: ScallopOption[Path] = trailArg[Path](name = "location")
+      
+      validatePathExists(location)
+      validatePathIsDirectory(location)
+      
+      descr("creates a report containing all content of deposit.properties without inferring any properties")
+      footer(SUBCOMMAND_SEPARATOR)
+    }
+    addSubcommand(rawCmd)
   }
   addSubcommand(reportCmd)
 

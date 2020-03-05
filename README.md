@@ -9,6 +9,7 @@ SYNOPSIS
     easy-manage-deposit report full [-a, --age <n>] [<depositor>]
     easy-manage-deposit report summary [-a, --age <n>] [<depositor>]
     easy-manage-deposit report error [-a, --age <n>] [<depositor>]
+    easy-manage-deposit report raw [<location>]
     easy-manage-deposit clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
     easy-manage-deposit sync-fedora-state <easy-dataset-id>
 
@@ -51,6 +52,13 @@ ARGUMENTS
           
            trailing arguments:
             depositor (not required)
+          ---
+          
+          Subcommand: report raw - creates a report containing all content of deposit.properties without inferring any properties
+            -h, --help   Show help message
+          
+           trailing arguments:
+            location (required)
           ---
           Subcommand: clean - removes deposit with specified state
             -d, --data-only                      If specified, the deposit.properties and
