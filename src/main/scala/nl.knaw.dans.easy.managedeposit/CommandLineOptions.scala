@@ -16,6 +16,7 @@
 package nl.knaw.dans.easy.managedeposit
 
 import nl.knaw.dans.easy.managedeposit.State.State
+import nl.knaw.dans.easy.managedeposit.Area.Area
 import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand, ValueConverter, singleArgConverter }
 
 import scala.language.{ postfixOps, reflectiveCalls }
@@ -25,13 +26,13 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   editBuilder(_.setHelpWidth(110))
   printedName = "easy-manage-deposit"
   private val SUBCOMMAND_SEPARATOR = "---\n"
-  val description: String = s"""Manages the deposits in the deposit area."""
+  val description: String = s"""Manages the deposits in the deposit areas ingest-flow-inbox, sword2-inbox, deposit-draft-area."""
   val synopsis: String =
     s"""
        |  $printedName report full [-a, --age <n>] [<depositor>]
        |  $printedName report summary [-a, --age <n>] [<depositor>]
        |  $printedName report error [-a, --age <n>] [<depositor>]
-       |  $printedName clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
+       |  $printedName clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-r, --area <inbox>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
        |  $printedName sync-fedora-state <easy-dataset-id>
      """.stripMargin
   version(s"$printedName v${ configuration.version }")
@@ -47,6 +48,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
        |
        |""".stripMargin)
   private implicit val stateParser: ValueConverter[State] = singleArgConverter(State.withName)
+  private implicit val areaParser: ValueConverter[Area] = singleArgConverter(Area.withName)
 
   val reportCmd = new Subcommand("report") {
 
@@ -81,6 +83,7 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
   val cleanCmd = new Subcommand("clean") {
     val depositor: ScallopOption[DepositorId] = trailArg("depositor", required = false)
+    val area: ScallopOption[Area] = opt[Area](short='r', name="area", required = false, descr="Only perform clean on deposits in this area. Area must be one of: sword2-inbox, ingest-flow-inbox, deposit-draft-area.")
     val dataOnly: ScallopOption[Boolean] = opt[Boolean](default = Some(false), descr = "If specified, the deposit.properties and the container file of the deposit are not deleted")
     val state: ScallopOption[State] = opt[State](required= true, descr = "The deposits with the specified state argument are deleted")
     val keep: ScallopOption[Int] = opt[Int](default = Some(-1), validate = -1 <=, descr = "The deposits whose ages are greater than or equal to the argument n (days) are deleted. An age argument of n=0 days corresponds to 0<=n<1.")
@@ -106,6 +109,12 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(syncFedoraState)
+
+  val  syncInReviewState = new Subcommand("sync-in-review-state") {
+    descr("Checks all the deposits in the deposit-draft-area that are IN_REVIEW, and updates them from the deposit.properties in the ingest-flow-area")
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(syncInReviewState)
 
   footer("")
   verify()

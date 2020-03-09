@@ -28,7 +28,7 @@
     <version>3.1.15-SNAPSHOT</version>
     <name>EASY Manage Deposit</name>
     <url>https://github.com/DANS-KNAW/easy-manage-deposit</url>
-    <description>Manages the deposits in the deposit area.</description>
+    <description>Manages the deposits in the deposit areas ingest-flow-inbox, sword2-inbox, deposit-draft-area.</description>
     <inceptionYear>2017</inceptionYear>
     <properties>
         <main-class>nl.knaw.dans.easy.managedeposit.Command</main-class>

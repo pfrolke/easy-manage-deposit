@@ -9,7 +9,7 @@ SYNOPSIS
     easy-manage-deposit report full [-a, --age <n>] [<depositor>]
     easy-manage-deposit report summary [-a, --age <n>] [<depositor>]
     easy-manage-deposit report error [-a, --age <n>] [<depositor>]
-    easy-manage-deposit clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
+    easy-manage-deposit clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-r, --area <inbox>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
     easy-manage-deposit sync-fedora-state <easy-dataset-id>
 
       
@@ -54,6 +54,8 @@ ARGUMENTS
             depositor (not required)
           ---
           Subcommand: clean - removes deposit with specified state
+            -r, --area  <arg>                    Only perform clean on deposits in this area. 
+                                                 Area must be one of: sword2-inbox, ingest-flow-inbox, deposit-draft-area.   
             -d, --data-only                      If specified, the deposit.properties and
                                                  the container file of the deposit are not
                                                  deleted
@@ -72,8 +74,7 @@ ARGUMENTS
             -o, --output                         Output a list of depositIds of the
                                                  deposits that were deleted
             -s, --state  <arg>                   The deposits with the specified state
-                                                 argument are deleted
-            -a, --area  <arg>                    The area from which the deposits are considered                                      
+                                                 argument are deleted 
             -h, --help                           Show help message
             
            trailing arguments:
@@ -93,15 +94,13 @@ ARGUMENTS
           Subcommand: sync-in-review-state - Checks all the deposits in the deposit-draft-area that 
                                          are IN_REVIEW, and updates them from the deposit.properties  
                                          in the ingest-flow-area
-    
+            -h, --help                   Show help message 
+          ---
      
 DESCRIPTION
 -----------
 
-Manages the deposits in the deposit areas:
- * ingest-flow-inbox
- * sword2-inbox
- * deposit-draft-area
+Manages the deposits in the deposit areas ingest-flow-inbox, sword2-inbox, deposit-draft-area.
      
 EXAMPLES
 --------
