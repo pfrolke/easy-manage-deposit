@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.knaw.dans.easy</groupId>
     <artifactId>easy-manage-deposit</artifactId>
-    <version>3.1.15-SNAPSHOT</version>
+    <version>3.2.1-SNAPSHOT</version>
     <name>EASY Manage Deposit</name>
     <url>https://github.com/DANS-KNAW/easy-manage-deposit</url>
     <description>Manages the deposits in the deposit areas ingest-flow-inbox, sword2-inbox, deposit-draft-area.</description>
@@ -57,6 +57,7 @@
         <dependency>
             <groupId>org.rogach</groupId>
             <artifactId>scallop_2.12</artifactId>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>

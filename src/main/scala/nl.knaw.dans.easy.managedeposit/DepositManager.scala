@@ -37,6 +37,16 @@ class DepositManager(val deposit: Deposit) extends DebugEnhancedLogging {
   private lazy val depositProperties: Option[PropertiesConfiguration] = findDepositProperties
   private lazy val lastModified: Option[DateTime] = getLastModifiedTimestamp.unsafeGetOrThrow
 
+  def properties: Map[String, String] = {
+    depositProperties
+      .map(props => {
+        props.getKeys.asScala
+          .map(key => key -> props.getString(key))
+          .toMap
+      })
+      .getOrElse(Map.empty) + ("depositId" -> deposit.getFileName.toString)
+  }
+
   def getNumberOfContinuedDeposits: Int = {
     if (Files.exists(deposit)) {
       deposit.list(_.count(_.getFileName.toString.matches("""^.*\.zip\.\d+$""")))

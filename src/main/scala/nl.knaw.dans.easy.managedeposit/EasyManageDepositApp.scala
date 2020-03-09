@@ -21,8 +21,8 @@ import java.nio.file.{ Files, Path, Paths }
 import com.yourmediashelf.fedora.client.{ FedoraClient, FedoraCredentials }
 import nl.knaw.dans.easy.managedeposit.Command.FeedBackMessage
 import nl.knaw.dans.lib.error._
-import nl.knaw.dans.lib.string._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import nl.knaw.dans.lib.string._
 
 import scala.collection.JavaConverters._
 import scala.language.postfixOps
@@ -48,6 +48,10 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
     depositsDir.list(collectDataFromDepositsDir(filterOnDepositor, filterOnAge, location))
   }
 
+  private def collectRawDepositProperties(depositsDir: Path): Seq[Seq[String]] = {
+    depositsDir.list(collectRawDepositProperties)
+  }
+
   def deleteDepositsFromDepositsDir(depositsDir: Path, deleteParams: DeleteParameters, location: String): Try[Deposits] = {
     depositsDir.list(deleteDepositsFromDepositsDir(deleteParams, location))
   }
@@ -60,6 +64,40 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
       .withFilter(_.isOlderThan(filterOnAge))
       .map(_.getDepositInformation(location))
       .collect { case Success(d: DepositInformation) => d }
+  }
+
+  private def collectRawDepositProperties(depositPaths: List[Path]): Seq[Seq[String]] = {
+    makeCompleteTable(getDepositManagers(depositPaths).map(_.properties))
+  }
+
+  /**
+   * Given a sequence of maps of key-value pairs, construct a table that has values for every key in every map.
+   *
+   * @example
+   * {{{
+   *    [
+   *      { "a" -> "1", "b" -> "2", "c" -> "3" },
+   *      { "a" -> "4", "c" -> "5" },
+   *      { "b" -> "6", "c" -> "7", "d" -> "8" },
+   *    ]
+   *
+   *    should result in
+   *
+   *    [
+   *      [ "a",   "b",   "c", "d"   ],
+   *      [ "1",   "2",   "3", "n/a" ],
+   *      [ "4",   "n/a", "5", "n/a" ],
+   *      [ "n/a", "6",   "7", "8"   ],
+   *    ]
+   * }}}
+   * @param input the sequence of maps to be made into a complete table
+   * @param defaultValue the value (lazily evaluated) to be used for values that are not available (defaults to `"n/a"`)
+   * @return the completed table
+   */
+  private def makeCompleteTable(input: Seq[Map[String, String]], defaultValue: => String = "n/a"): Seq[Seq[String]] = {
+    val keys: List[String] = input.flatMap(_.keys.toSeq).distinct.toList
+
+    keys +: input.map(m => keys.map(m.getOrElse(_, defaultValue)))
   }
 
   private def getDepositManagers(depositPaths: List[Path]): List[DepositManager] = {
@@ -99,6 +137,11 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
     val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
     ReportGenerator.outputErrorReport(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits)(Console.out)
     "End of error report."
+  }
+
+  def createRawReport(location: Path): Try[String] = Try {
+    ReportGenerator.outputRawReport(collectRawDepositProperties(location))(Console.out)
+    "End of raw report."
   }
 
   def cleanDeposits(deleteParams: DeleteParameters): Try[FeedBackMessage] = {

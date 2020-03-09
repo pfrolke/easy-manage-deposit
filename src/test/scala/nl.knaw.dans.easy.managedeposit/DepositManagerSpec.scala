@@ -65,6 +65,26 @@ class DepositManagerSpec extends TestSupportFixture with BeforeAndAfterEach {
     }
   }
 
+  "properties" should "return the contents of deposit.properties as a key-value map, with an added property 'depositId' -> <deposit dir name>" in {
+    val depositManager = new DepositManager(depositOnePath)
+    val properties = depositManager.properties
+    properties should contain only (
+      "bag-store.bag-id" -> "aba410b6-1a55-40b2-9ebe-6122aad00285",
+      "creation.timestamp" -> "2018-11-08T22:05:53.992Z",
+      "state.description" -> "Deposit is valid and ready for post-submission processing",
+      "state.label" -> "SUBMITTED",
+      "depositor.userId" -> "user001",
+      "identifier.doi" -> "aba410b6-9090-40b2-8080-6122aad00285",
+      "identifier.dans-doi.registered" -> "yes",
+      "identifier.fedora" -> "easy-dataset:12345",
+      "curation.required" -> "true",
+      "curation.performed" -> "false",
+      "bag-store.bag-name" -> "baggy",
+      "deposit.origin" -> "SWORD2",
+      "depositId" -> depositOnePath.getFileName.toString,
+    )
+  }
+
   "getters" should "retrieve the values from deposit.properties if it exists" in {
     val depositManager = new DepositManager(depositOnePath)
     depositManager.getDepositId.value shouldBe "aba410b6-1a55-40b2-9ebe-6122aad00285"

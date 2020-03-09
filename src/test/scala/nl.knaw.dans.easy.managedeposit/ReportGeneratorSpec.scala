@@ -257,6 +257,47 @@ class ReportGeneratorSpec extends TestSupportFixture
     forEvery(deposits)(deposit => fullReport should include(createCsvRow(deposit)))
   }
 
+  "outputRawReport" should "not print anything on an empty table" in {
+    val baos = new ByteArrayOutputStream()
+    val ps: PrintStream = new PrintStream(baos, true)
+    val table: Seq[Seq[String]] = Seq.empty
+    ReportGenerator.outputRawReport(table)(ps)
+    val report = baos.toString()
+    report shouldBe empty
+  }
+
+  it should "only print the headers when only one row is provided" in {
+    val baos = new ByteArrayOutputStream()
+    val ps: PrintStream = new PrintStream(baos, true)
+    val table: Seq[Seq[String]] = Seq(
+      Seq("a", "b", "c", "d"),
+    )
+    ReportGenerator.outputRawReport(table)(ps)
+    val report = baos.toString()
+    report shouldBe
+      """a,b,c,d
+        |""".stripMargin
+  }
+
+  it should "only print the report when both headers and data are provided" in {
+    val baos = new ByteArrayOutputStream()
+    val ps: PrintStream = new PrintStream(baos, true)
+    val table: Seq[Seq[String]] = Seq(
+      Seq("a", "b", "c", "d"),
+      Seq("1", "2", "3", "n/a"),
+      Seq("4", "n/a", "5", "n/a"),
+      Seq("n/a", "6", "7", "8"),
+    )
+    ReportGenerator.outputRawReport(table)(ps)
+    val report = baos.toString()
+    report shouldBe
+      """a,b,c,d
+        |1,2,3,n/a
+        |4,n/a,5,n/a
+        |n/a,6,7,8
+        |""".stripMargin
+  }
+
   private def outputReportManged(ps: PrintStream, deposits: List[DepositInformation], reportType: ReportType): Unit = {
     try {
       reportType match {

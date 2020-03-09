@@ -56,6 +56,30 @@ object ReportGenerator {
     })
   }
 
+  def outputRawReport(table: Seq[Seq[String]])(implicit printStream: PrintStream): Unit = {
+    table match {
+      case Seq() =>
+      case Seq(header) =>
+        val csvFormat = CSVFormat.RFC4180
+          .withHeader(header: _*)
+          .withDelimiter(',')
+          .withRecordSeparator('\n')
+        
+        csvFormat.print(printStream)
+          .close()
+      case Seq(header, data @ _*) =>
+        val csvFormat = CSVFormat.RFC4180
+          .withHeader(header: _*)
+          .withDelimiter(',')
+          .withRecordSeparator('\n')
+
+        for (printer <- managed(csvFormat.print(printStream));
+             row <- data) {
+          printer.printRecord(row: _*)
+        }
+    }
+  }
+
   def outputSummary(deposits: Deposits, depositor: Option[DepositorId] = None)(implicit printStream: PrintStream): Unit = {
     val selectedDeposits = filterDepositsByDepositor(deposits, depositor)
     val depositsGroupedByState = groupAndSortDepositsAlphabeticallyByState(selectedDeposits)
