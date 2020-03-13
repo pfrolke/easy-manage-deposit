@@ -29,6 +29,7 @@ package object managedeposit {
   type Deposits = Seq[DepositInformation]
   type DepositorId = String
   type Deposit = Path
+  type Datamanager = String
   type Age = Int
   type DatasetId = String
 

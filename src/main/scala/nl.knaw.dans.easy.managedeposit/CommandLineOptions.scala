@@ -30,9 +30,9 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   val description: String = s"""Manages the deposits in the deposit area."""
   val synopsis: String =
     s"""
-       |  $printedName report full [-a, --age <n>] [<depositor>]
-       |  $printedName report summary [-a, --age <n>] [<depositor>]
-       |  $printedName report error [-a, --age <n>] [<depositor>]
+       |  $printedName report full [-a, --age <n>] [-m, --datamanager <datamanager>] [<depositor>]
+       |  $printedName report summary [-a, --age <n>] [-m, --datamanager <datamanager>] [<depositor>]
+       |  $printedName report error [-a, --age <n>] [-m, --datamanager <datamanager>] [<depositor>]
        |  $printedName report raw [<location>]
        |  $printedName clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
        |  $printedName sync-fedora-state <easy-dataset-id>
@@ -55,27 +55,33 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
 
     val fullCmd = new Subcommand("full") {
       val depositor: ScallopOption[DepositorId] = trailArg("depositor", required = false)
+      val datamanager: ScallopOption[Datamanager] = opt("datamanager", short = 'm',
+        descr = "Only report on the deposits that are assigned to this datamanager.")
       val age: ScallopOption[Age] = opt[Age](name = "age", short = 'a', validate = 0 <=,
         descr = "Only report on the deposits that are less than n days old. An age argument of n=0 days corresponds to 0<=n<1. If this argument is not provided, all deposits will be reported on.")
-      descr("creates a full report for depositor(optional)")
+      descr("creates a full report for a depositor and/or datamanager")
       footer(SUBCOMMAND_SEPARATOR)
     }
     addSubcommand(fullCmd)
 
     val summaryCmd = new Subcommand("summary") {
       val depositor: ScallopOption[DepositorId] = trailArg("depositor", required = false)
+      val datamanager: ScallopOption[Datamanager] = opt("datamanager", short = 'm',
+        descr = "Only report on the deposits that are assigned to this datamanager.")
       val age: ScallopOption[Age] = opt[Age](name = "age", short = 'a', validate = 0 <=,
         descr = "Only report on the deposits that are less than n days old. An age argument of n=0 days corresponds to 0<=n<1. If this argument is not provided, all deposits will be reported on.")
-      descr("creates a summary report for depositor(optional)")
+      descr("creates a summary report for a depositor and/or datamanager")
       footer(SUBCOMMAND_SEPARATOR)
     }
     addSubcommand(summaryCmd)
 
     val errorCmd = new Subcommand("error") {
       val depositor: ScallopOption[DepositorId] = trailArg("depositor", required = false)
+      val datamanager: ScallopOption[Datamanager] = opt("datamanager", short = 'm',
+        descr = "Only report on the deposits that are assigned to this datamanager.")
       val age: ScallopOption[Age] = opt[Age](name = "age", short = 'a', validate = 0 <=,
         descr = "Only report on the deposits that are less than n days old. An age argument of n=0 days corresponds to 0<=n<1. If this argument is not provided, all deposits will be reported on.")
-      descr("creates a report displaying all failed, rejected and invalid deposits for depositor(optional)")
+      descr("creates a report displaying all failed, rejected and invalid deposits for a depositor and/or datamanager")
       footer(SUBCOMMAND_SEPARATOR)
     }
     addSubcommand(errorCmd)

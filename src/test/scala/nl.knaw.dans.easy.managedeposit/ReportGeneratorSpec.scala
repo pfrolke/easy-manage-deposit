@@ -318,16 +318,17 @@ class ReportGeneratorSpec extends TestSupportFixture
       s"${ deposit.location }," +
       s"${ deposit.doiIdentifier }," +
       s"${ deposit.registeredString }," +
-      s"${ deposit.fedoraIdentifier.toString }," +
+      s"${ deposit.fedoraIdentifier }," +
+      s"${ deposit.datamanager }," +
       s"${ deposit.creationTimestamp }," +
       s"${ deposit.lastModified }," +
       s"${ deposit.description }," +
-      s"${ deposit.numberOfContinuedDeposits.toString }," +
-      s"${ deposit.storageSpace.toString }"
+      s"${ deposit.numberOfContinuedDeposits }," +
+      s"${ deposit.storageSpace }"
   }
 
   private def createDeposit(depositorId: String, state: State, location: String): DepositInformation = {
-    DepositInformation(UUID.randomUUID().toString, "10.17026/dans-12345", Some(true), "FedoraId", depositorId, state, "", DateTime.now().minusDays(3).toString(), 2, 129000, "", "SWORD2", location, "baggy")
+    DepositInformation(UUID.randomUUID().toString, "10.17026/dans-12345", Some(true), "FedoraId", depositorId, state, "", DateTime.now().minusDays(3).toString(), 2, 129000, "", "SWORD2", location, "baggy", "my-datamanager")
   }
 
   private def createDeposits = List(

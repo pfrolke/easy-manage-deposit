@@ -3,10 +3,11 @@
 # Helper script to create error reports and send them to a list of recipients.
 #
 # Use - (dash) as depositor-account to generate a report for all the deposits.
+# Use - (dash) as datamanager-account to generate a report for all datamanagers.
 #
 
 usage() {
-    echo "Usage: create-and-send-error-report [-s, --send-always <true|false>] <host-name> <depositor-account> [<from-email>] <to-email> [<bcc-email>]"
+    echo "Usage: create-and-send-error-report [-s, --send-always <true|false>] <host-name> <depositor-account> <datamanager-account> [<from-email>] <to-email> [<bcc-email>]"
     echo "       create-and-send-error-report --help"
 }
 
@@ -25,9 +26,10 @@ done
 
 EASY_HOST=$1
 EASY_ACCOUNT=$2
-FROM=$3
-TO=$4
-BCC=$5
+DATAMANAGER_ACCOUNT=$3
+FROM=$4
+TO=$5
+BCC=$6
 TMPDIR=/tmp
 
 if [[ "$EASY_ACCOUNT" == "-" ]]; then
@@ -35,8 +37,18 @@ if [[ "$EASY_ACCOUNT" == "-" ]]; then
 fi
 
 DATE=$(date +%Y-%m-%d)
-REPORT_ERROR=${TMPDIR}/report-error-${EASY_ACCOUNT:-all}-$DATE.csv
-REPORT_ERROR_24=${TMPDIR}/report-error-${EASY_ACCOUNT:-all}-yesterday-$DATE.csv
+
+if [[ "$DATAMANAGER_ACCOUNT" == "-" ]]; then
+    DATAMANAGER=""
+    ERR_DM="all datamanagers"
+    REPORT_ERROR=${TMPDIR}/report-error-${EASY_ACCOUNT:-all}-$DATE.csv
+    REPORT_ERROR_24=${TMPDIR}/report-error-${EASY_ACCOUNT:-all}-yesterday-$DATE.csv
+else
+    DATAMANAGER="-m $DATAMANAGER_ACCOUNT"
+    ERR_DM="datamanager $DATAMANAGER_ACCOUNT"
+    REPORT_ERROR=${TMPDIR}/report-error-${EASY_ACCOUNT:-all}-${DATAMANAGER_ACCOUNT:-all}-$DATE.csv
+    REPORT_ERROR_24=${TMPDIR}/report-error-${EASY_ACCOUNT:-all}-${DATAMANAGER_ACCOUNT:-all}-yesterday-$DATE.csv
+fi
 
 if [[ "$FROM" == "" ]]; then
     FROM_EMAIL=""
@@ -57,19 +69,15 @@ exit_if_failed() {
     if [[ $EXITSTATUS != 0 ]]; then
         echo "ERROR: $1, exit status = $EXITSTATUS"
         echo "Error report generation FAILED. Contact the system administrator." |
-        mail -s "$(echo -e "FAILED: $EASY_HOST Error report: status of failed $EASY_HOST deposits for ${EASY_ACCOUNT:-all depositors}\nX-Priority: 1")" \
+        mail -s "$(echo -e "FAILED: $EASY_HOST Error report: status of failed $EASY_HOST deposits for ${EASY_ACCOUNT:-all depositors} and ${ERR_DM}\nX-Priority: 1")" \
              $FROM_EMAIL $BCC_EMAILS "easy.applicatiebeheer@dans.knaw.nl"
         exit 1
     fi
     echo "OK"
 }
 
-echo -n "Creating error report for ${EASY_ACCOUNT:-all depositors}..."
-/opt/dans.knaw.nl/easy-manage-deposit/bin/easy-manage-deposit report error $EASY_ACCOUNT > $REPORT_ERROR
-exit_if_failed "error report failed"
-
-echo -n "Creating error report from the last 24 hours for ${EASY_ACCOUNT:-all depositors}..."
-/opt/dans.knaw.nl/easy-manage-deposit/bin/easy-manage-deposit report error --age 0 $EASY_ACCOUNT > $REPORT_ERROR_24
+echo -n "Creating error report from the last 24 hours for ${EASY_ACCOUNT:-all depositors} and ${ERR_DM}..."
+/opt/dans.knaw.nl/easy-manage-deposit/bin/easy-manage-deposit report error --age 0 $DATAMANAGER $EASY_ACCOUNT > $REPORT_ERROR_24
 exit_if_failed "error report failed"
 
 echo "Counting the number of lines in $REPORT_ERROR_24; if there is only a header (a.k.a. 1 line), no failed deposits were found and sending a report is not needed..."
@@ -79,13 +87,17 @@ echo "Line count in $REPORT_ERROR_24: $LINE_COUNT line(s)."
 if [[ $LINE_COUNT -gt 1 || "$SEND_ALWAYS" = true ]]; then
     if [[ $LINE_COUNT == 1 ]]; then
       echo "No new failed deposits detected, but sending the report anyway"
-      SUBJECT_LINE="$EASY_HOST Error report: status of failed EASY deposits (${EASY_ACCOUNT:-all depositors}; no new deposits)"
+      SUBJECT_LINE="$EASY_HOST Error report: status of failed EASY deposits (${EASY_ACCOUNT:-all depositors}; ${ERR_DM}; no new deposits)"
     else
       echo "New failed deposits detected, therefore sending the report"
-      SUBJECT_LINE="$EASY_HOST Error report: status of failed EASY deposits (${EASY_ACCOUNT:-all depositors})"
+      SUBJECT_LINE="$EASY_HOST Error report: status of failed EASY deposits (${EASY_ACCOUNT:-all depositors}; ${ERR_DM})"
     fi
 
-    echo "Status of $EASY_HOST deposits d.d. $(date) for depositor: ${EASY_ACCOUNT:-all}" | \
+    echo -n "Creating error report for ${EASY_ACCOUNT:-all depositors} and ${ERR_DM}..."
+    /opt/dans.knaw.nl/easy-manage-deposit/bin/easy-manage-deposit report error $DATAMANAGER $EASY_ACCOUNT > $REPORT_ERROR
+    exit_if_failed "error report failed"
+
+    echo "Status of $EASY_HOST deposits d.d. $(date) for depositor: ${EASY_ACCOUNT:-all} and ${ERR_DM}" | \
     mail -s "$SUBJECT_LINE" \
          -a $REPORT_ERROR \
          -a $REPORT_ERROR_24 \

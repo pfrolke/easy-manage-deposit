@@ -6,9 +6,9 @@ easy-manage-deposit
 SYNOPSIS
 --------
    
-    easy-manage-deposit report full [-a, --age <n>] [<depositor>]
-    easy-manage-deposit report summary [-a, --age <n>] [<depositor>]
-    easy-manage-deposit report error [-a, --age <n>] [<depositor>]
+    easy-manage-deposit report full [-a, --age <n>] [-m, --datamanager <datamanager>] [<depositor>]
+    easy-manage-deposit report summary [-a, --age <n>] [-m, --datamanager <datamanager>] [<depositor>]
+    easy-manage-deposit report error [-a, --age <n>] [-m, --datamanager <datamanager>] [<depositor>]
     easy-manage-deposit report raw [<location>]
     easy-manage-deposit clean [-d, --data-only] [-s, --state <state>] [-k, --keep <n>] [-l, --new-state-label <state>] [-n, --new-state-description <description>] [-f, --force] [-o, --output] [--do-update] [<depositor>]
     easy-manage-deposit sync-fedora-state <easy-dataset-id>
@@ -24,31 +24,40 @@ ARGUMENTS
           Subcommand: report
             -h, --help   Show help message
           
-          Subcommand: report full - creates a full report for depositor(optional)
-            -a, --age  <arg>   Only report on the deposits that are less than n days old.
-                               An age argument of n=0 days corresponds to 0<=n<1. If this
-                               argument is not provided, all deposits will be reported on.
-            -h, --help         Show help message
+          Subcommand: report full - creates a full report for a depositor and/or datamanager
+            -a, --age  <arg>           Only report on the deposits that are less than n
+                                       days old. An age argument of n=0 days corresponds
+                                       to 0<=n<1. If this argument is not provided, all
+                                       deposits will be reported on.
+            -m, --datamanager  <arg>   Only report on the deposits that are assigned to
+                                       this datamanager.
+            -h, --help                 Show help message
           
            trailing arguments:
             depositor (not required)
           ---
           
-          Subcommand: report summary - creates a summary report for depositor(optional)
-            -a, --age  <arg>   Only report on the deposits that are less than n days old.
-                               An age argument of n=0 days corresponds to 0<=n<1. If this
-                               argument is not provided, all deposits will be reported on.
-            -h, --help         Show help message
+          Subcommand: report summary - creates a summary report for a depositor and/or datamanager
+            -a, --age  <arg>           Only report on the deposits that are less than n
+                                       days old. An age argument of n=0 days corresponds
+                                       to 0<=n<1. If this argument is not provided, all
+                                       deposits will be reported on.
+            -m, --datamanager  <arg>   Only report on the deposits that are assigned to
+                                       this datamanager.
+            -h, --help                 Show help message
           
            trailing arguments:
             depositor (not required)
           ---
           
-          Subcommand: report error - creates a report displaying all failed, rejected and invalid deposits for depositor(optional)
-            -a, --age  <arg>   Only report on the deposits that are less than n days old.
-                               An age argument of n=0 days corresponds to 0<=n<1. If this
-                               argument is not provided, all deposits will be reported on.
-            -h, --help         Show help message
+          Subcommand: report error - creates a report displaying all failed, rejected and invalid deposits for a depositor and/or datamanager
+            -a, --age  <arg>           Only report on the deposits that are less than n
+                                       days old. An age argument of n=0 days corresponds
+                                       to 0<=n<1. If this argument is not provided, all
+                                       deposits will be reported on.
+            -m, --datamanager  <arg>   Only report on the deposits that are assigned to
+                                       this datamanager.
+            -h, --help                 Show help message
           
            trailing arguments:
             depositor (not required)

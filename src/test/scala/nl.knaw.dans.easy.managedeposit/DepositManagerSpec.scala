@@ -82,6 +82,8 @@ class DepositManagerSpec extends TestSupportFixture with BeforeAndAfterEach {
       "bag-store.bag-name" -> "baggy",
       "deposit.origin" -> "SWORD2",
       "depositId" -> depositOnePath.getFileName.toString,
+      "curation.datamanager.email" -> "FILL.IN.YOUR@VALID-EMAIL.NL",
+      "curation.datamanager.userId" -> "easyadmin",
     )
   }
 
@@ -96,6 +98,7 @@ class DepositManagerSpec extends TestSupportFixture with BeforeAndAfterEach {
     depositManager.getDansDoiRegistered.value shouldBe "yes"
     depositManager.getDepositOrigin.value shouldBe "SWORD2"
     depositManager.getDoiIdentifier.value shouldBe "aba410b6-9090-40b2-8080-6122aad00285"
+    depositManager.getDatamanager.value shouldBe "easyadmin"
   }
 
   it should "return an empty properties file if there is not a deposit.propertiesFile available" in {
@@ -107,6 +110,7 @@ class DepositManagerSpec extends TestSupportFixture with BeforeAndAfterEach {
     depositManager.getDoiIdentifier shouldBe empty
     depositManager.getDansDoiRegistered shouldBe empty
     depositManager.getDepositId.value shouldBe depositDirWithoutPropertiesPath.getFileName.toString
+    depositManager.getDatamanager shouldBe empty
   }
 
   "validateUserCanReadTheDepositDirectoryAndTheDepositProperties" should "succeed if all right are set properly" in {

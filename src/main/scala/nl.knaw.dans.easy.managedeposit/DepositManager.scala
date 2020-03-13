@@ -94,6 +94,10 @@ class DepositManager(val deposit: Deposit) extends DebugEnhancedLogging {
     getProperty("curation.performed").fold(false)(BooleanUtils.toBoolean)
   }
 
+  def getDatamanager: Option[Datamanager] = {
+    getProperty("curation.datamanager.userId")
+  }
+
   def getBagDirName: Option[String] = {
     getProperty("bag-store.bag-name").orElse(retrieveBagNameFromFilesystem)
   }
@@ -138,6 +142,10 @@ class DepositManager(val deposit: Deposit) extends DebugEnhancedLogging {
     filterOnDepositor.forall(getDepositorId.getOrElse(notAvailable) ==)
   }
 
+  def hasDatamanager(filterOnDatamanager: Option[Datamanager]): Boolean = {
+    filterOnDatamanager.forall(getDatamanager.getOrElse(notAvailable) ==)
+  }
+
   def getDepositInformation(location: String)(implicit dansDoiPrefixes: List[String]): Try[DepositInformation] = Try {
     DepositInformation(
       depositId = getDepositId.getOrElse(notAvailable),
@@ -153,7 +161,8 @@ class DepositManager(val deposit: Deposit) extends DebugEnhancedLogging {
       lastModified = lastModified.map(_.toString(dateTimeFormatter)).getOrElse(notAvailable),
       origin = getDepositOrigin.getOrElse(notAvailable),
       location = location,
-      getBagDirName.getOrElse(notAvailable),
+      bagDirName = getBagDirName.getOrElse(notAvailable),
+      datamanager = getDatamanager.getOrElse(notAvailable),
     )
   }.doIfFailure { case t: Throwable => logger.error(s"[${ deposit.getFileName }] Error while getting depositInformation: ${ t.getMessage }") }
 

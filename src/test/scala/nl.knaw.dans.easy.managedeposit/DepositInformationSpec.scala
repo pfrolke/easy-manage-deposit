@@ -22,7 +22,7 @@ class DepositInformationSpec extends FlatSpec with Matchers with OptionValues {
 
   private implicit val dansDoiPrefixes: List[String] = List("10.17026/", "10.5072/")
 
-  val deposit = DepositInformation("DepositId", "10.17026/dans-12345", Some(true), "123", "123", State.ARCHIVED, "description", "2000-01-01", 2, 1234L, "2000-01-02", "ORIGIN-1", "LOCATION-1", "baggy")
+  val deposit = DepositInformation("DepositId", "10.17026/dans-12345", Some(true), "123", "123", State.ARCHIVED, "description", "2000-01-01", 2, 1234L, "2000-01-02", "ORIGIN-1", "LOCATION-1", "baggy", "my-datamanager")
 
   "registeredString" should "return a yes when DANS DOI and DOI is registered" in {
     deposit.registeredString shouldBe "yes"

@@ -44,8 +44,8 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
     .asScala.toList
     .map(prefix => prefix.asInstanceOf[String])
 
-  private def collectDataFromDepositsDir(depositsDir: Path, filterOnDepositor: Option[DepositorId], filterOnAge: Option[Age], location: String): Deposits = {
-    depositsDir.list(collectDataFromDepositsDir(filterOnDepositor, filterOnAge, location))
+  private def collectDataFromDepositsDir(depositsDir: Path, filterOnDepositor: Option[DepositorId], filterOnDatamanager: Option[Datamanager], filterOnAge: Option[Age], location: String): Deposits = {
+    depositsDir.list(collectDataFromDepositsDir(filterOnDepositor, filterOnDatamanager, filterOnAge, location))
   }
 
   private def collectRawDepositProperties(depositsDir: Path): Seq[Seq[String]] = {
@@ -56,11 +56,12 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
     depositsDir.list(deleteDepositsFromDepositsDir(deleteParams, location))
   }
 
-  private def collectDataFromDepositsDir(filterOnDepositor: Option[DepositorId], filterOnAge: Option[Age], location: String)(depositPaths: List[Path]): Deposits = {
+  private def collectDataFromDepositsDir(filterOnDepositor: Option[DepositorId], filterOnDatamanager: Option[Datamanager], filterOnAge: Option[Age], location: String)(depositPaths: List[Path]): Deposits = {
     trace(filterOnDepositor)
     getDepositManagers(depositPaths)
       .withFilter(_.isValidDeposit)
       .withFilter(_.hasDepositor(filterOnDepositor))
+      .withFilter(_.hasDatamanager(filterOnDatamanager))
       .withFilter(_.isOlderThan(filterOnAge))
       .map(_.getDepositInformation(location))
       .collect { case Success(d: DepositInformation) => d }
@@ -115,26 +116,26 @@ class EasyManageDepositApp(configuration: Configuration) extends DebugEnhancedLo
     } yield depositInformation
   }
 
-  def summary(depositor: Option[DepositorId], age: Option[Age]): Try[String] = Try {
-    val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, age, "SWORD2")
-    val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, age, "INGEST_FLOW")
-    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
+  def summary(depositor: Option[DepositorId], datamanager: Option[Datamanager], age: Option[Age]): Try[String] = Try {
+    val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, datamanager, age, "SWORD2")
+    val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, datamanager, age, "INGEST_FLOW")
+    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, datamanager, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
     ReportGenerator.outputSummary(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits, depositor)(Console.out)
     "End of summary report."
   }
 
-  def createFullReport(depositor: Option[DepositorId], age: Option[Age]): Try[String] = Try {
-    val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, age, "SWORD2")
-    val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, age, "INGEST_FLOW")
-    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
+  def createFullReport(depositor: Option[DepositorId], datamanager: Option[Datamanager], age: Option[Age]): Try[String] = Try {
+    val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, datamanager, age, "SWORD2")
+    val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, datamanager, age, "INGEST_FLOW")
+    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, datamanager, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
     ReportGenerator.outputFullReport(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits)(Console.out)
     "End of full report."
   }
 
-  def createErrorReport(depositor: Option[DepositorId], age: Option[Age]): Try[String] = Try {
-    val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, age, "SWORD2")
-    val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, age, "INGEST_FLOW")
-    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
+  def createErrorReport(depositor: Option[DepositorId], datamanager: Option[Datamanager], age: Option[Age]): Try[String] = Try {
+    val sword2Deposits = collectDataFromDepositsDir(sword2DepositsDir, depositor, datamanager, age, "SWORD2")
+    val ingestFlowDeposits = collectDataFromDepositsDir(ingestFlowInbox, depositor, datamanager, age, "INGEST_FLOW")
+    val ingestFlowArchivedDeposits = ingestFlowInboxArchived.map(collectDataFromDepositsDir(_, depositor, datamanager, age, "INGEST_FLOW_ARCHIVED")).getOrElse(Seq.empty)
     ReportGenerator.outputErrorReport(sword2Deposits ++ ingestFlowDeposits ++ ingestFlowArchivedDeposits)(Console.out)
     "End of error report."
   }
