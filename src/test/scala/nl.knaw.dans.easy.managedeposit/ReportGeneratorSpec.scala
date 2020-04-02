@@ -23,7 +23,8 @@ import nl.knaw.dans.easy.managedeposit.ReportType.ReportType
 import nl.knaw.dans.easy.managedeposit.State._
 import org.joda.time.DateTime
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{ Inspectors, Matchers }
+import org.scalatest.Inspectors
+import org.scalatest.matchers.should.Matchers
 
 class ReportGeneratorSpec extends TestSupportFixture
   with Matchers

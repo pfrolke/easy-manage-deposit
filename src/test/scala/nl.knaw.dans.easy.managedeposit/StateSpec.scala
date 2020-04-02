@@ -15,9 +15,11 @@
  */
 package nl.knaw.dans.easy.managedeposit
 
-import org.scalatest.{ FlatSpec, Matchers, OptionValues }
+import org.scalatest.OptionValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class StateSpec extends FlatSpec with Matchers with OptionValues {
+class StateSpec extends AnyFlatSpec with Matchers with OptionValues {
 
   "The toState method" should "give the proper state when called with an existing value" in {
     State.toState("ARCHIVED").value shouldBe State.ARCHIVED

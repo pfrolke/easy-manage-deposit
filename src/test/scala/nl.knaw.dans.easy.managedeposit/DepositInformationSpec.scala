@@ -16,9 +16,11 @@
 package nl.knaw.dans.easy.managedeposit
 
 import nl.knaw.dans.easy.managedeposit.State.{ DRAFT, FAILED }
-import org.scalatest.{ FlatSpec, Matchers, OptionValues }
+import org.scalatest.OptionValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DepositInformationSpec extends FlatSpec with Matchers with OptionValues {
+class DepositInformationSpec extends AnyFlatSpec with Matchers with OptionValues {
 
   private implicit val dansDoiPrefixes: List[String] = List("10.17026/", "10.5072/")
 
