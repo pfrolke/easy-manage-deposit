@@ -23,7 +23,7 @@ import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.apache.commons.configuration.PropertiesConfiguration
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang.BooleanUtils
+import org.apache.commons.lang.{ BooleanUtils, StringUtils }
 import org.joda.time.{ DateTime, DateTimeZone, Duration }
 import resource.managed
 
@@ -71,7 +71,7 @@ class DepositManager(val deposit: Deposit) extends DebugEnhancedLogging {
   }
 
   def getStateDescription: Option[String] = {
-    getProperty(stateDescription)
+    getProperty(stateDescription).map(descr => StringUtils.abbreviate(descr, 1000))
   }
 
   def getDepositorId: Option[String] = {
